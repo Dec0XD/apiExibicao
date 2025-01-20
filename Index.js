@@ -10,7 +10,7 @@ const carregarDadosExcel = () => {
     const caminhoArquivo = path.join(__dirname, 'data/RELAT FALHA CML OPEC TVBA-CCAST 2024.xlsx');
     const workbook = xlsx.readFile(caminhoArquivo);
     const primeiraAba = workbook.Sheets[workbook.SheetNames[0]];
-    const dados = xlsx.utils.sheet_to_json(primeiraAba);
+    const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
     return dados;
 };
 
