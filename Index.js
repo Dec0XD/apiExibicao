@@ -13,12 +13,27 @@ const carregarDadosOPEC = () => {
     const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
     return dados;
 };
-const carregarDadosPGM_TVBA = () => {
+const carregarDadosPGM_TVBA_Planilha4 = () => {
     const caminhoArquivo = path.join(__dirname, 'data/Planilha PGM Exibição - TVBA 2024.xlsm');
     const workbook = xlsx.readFile(caminhoArquivo);
     const primeiraAba = workbook.Sheets[workbook.SheetNames[2]];
     const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
     return dados;
+};
+
+const carregarDadosPGM_TVBA_Relatorio = () => {
+    const caminhoArquivo = path.join(__dirname, 'data/Planilha PGM Exibição - TVBA 2024.xlsm');
+    const workbook = xlsx.readFile(caminhoArquivo);
+    const primeiraAba = workbook.Sheets[workbook.SheetNames[4]];
+    const range = xlsx.utils.decode_range(primeiraAba['!ref']);
+    range.s.r = 6; // Ignorar as 6 primeiras linhas
+    primeiraAba['!ref'] = xlsx.utils.encode_range(range);
+    const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
+    const colunasParaRemover = ['Colunas1'];
+    return dados.map(row => {
+        colunasParaRemover.forEach(coluna => delete row[coluna]);
+        return row;
+    });
 };
 
 // Rota para fornecer dados do Excel
@@ -33,7 +48,16 @@ app.get('/dadosOPEC', (req, res) => {
 
 app.get('/dadosPGM_TVBA', (req, res) => {
     try {
-        const dados = carregarDadosPGM_TVBA();
+        const dados = carregarDadosPGM_TVBA_Planilha4();
+        res.json(dados);
+    } catch (erro) {
+        res.status(500).json({ mensagem: 'Erro ao carregar dados do Excel', erro });
+    }
+});
+
+app.get('/dadosPGM_TVBA_relatorio', (req, res) => {
+    try {
+        const dados = carregarDadosPGM_TVBA_Relatorio();
         res.json(dados);
     } catch (erro) {
         res.status(500).json({ mensagem: 'Erro ao carregar dados do Excel', erro });
