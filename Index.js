@@ -13,10 +13,19 @@ const carregarDadosOPEC = () => {
     const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
     return dados;
 };
+
 const carregarDadosPGM_TVBA_Planilha4 = () => {
     const caminhoArquivo = path.join(__dirname, 'data/Planilha PGM Exibição - TVBA 2024.xlsm');
     const workbook = xlsx.readFile(caminhoArquivo);
     const primeiraAba = workbook.Sheets[workbook.SheetNames[2]];
+    const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
+    return dados;
+};
+
+const carregarDadosPGM_Unificados = () => {
+    const caminhoArquivo = path.join(__dirname, 'data/Planilha Unificada.xlsx');
+    const workbook = xlsx.readFile(caminhoArquivo);
+    const primeiraAba = workbook.Sheets[workbook.SheetNames[1]];
     const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
     return dados;
 };
@@ -54,18 +63,9 @@ app.get('/dadosOPEC', (req, res) => {
     }
 });
 
-app.get('/dadosPGM_TVBA', (req, res) => {
+app.get('/dadosPGM_Relatorio', (req, res) => {
     try {
-        const dados = carregarDadosPGM_TVBA_Planilha4();
-        res.json(dados);
-    } catch (erro) {
-        res.status(500).json({ mensagem: 'Erro ao carregar dados do Excel', erro });
-    }
-});
-
-app.get('/dadosPGM_TVBA_relatorio', (req, res) => {
-    try {
-        const dados = carregarDadosPGM_TVBA_Relatorio();
+        const dados = carregarDadosPGM_Unificados();
         res.json(dados);
     } catch (erro) {
         res.status(500).json({ mensagem: 'Erro ao carregar dados do Excel', erro });
