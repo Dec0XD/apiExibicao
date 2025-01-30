@@ -36,6 +36,14 @@ const carregarDadosPGM_TVBA_Relatorio = () => {
     });
 };
 
+const carregarDadosUnificados_relatorio = () => {
+    const caminhoArquivo = path.join(__dirname, 'data/Planilha Unificada.xlsx');
+    const workbook = xlsx.readFile(caminhoArquivo);
+    const primeiraAba = workbook.Sheets[workbook.SheetNames[0]];
+    const dados = xlsx.utils.sheet_to_json(primeiraAba, { raw: false, dateNF: 'dd/mm/yyyy' });
+    return dados;
+};
+
 // Rota para fornecer dados do Excel
 app.get('/dadosOPEC', (req, res) => {
     try {
@@ -58,6 +66,15 @@ app.get('/dadosPGM_TVBA', (req, res) => {
 app.get('/dadosPGM_TVBA_relatorio', (req, res) => {
     try {
         const dados = carregarDadosPGM_TVBA_Relatorio();
+        res.json(dados);
+    } catch (erro) {
+        res.status(500).json({ mensagem: 'Erro ao carregar dados do Excel', erro });
+    }
+});
+
+app.get('/dadosUnificados_relatorio', (req, res) => {
+    try {
+        const dados = carregarDadosUnificados_relatorio();
         res.json(dados);
     } catch (erro) {
         res.status(500).json({ mensagem: 'Erro ao carregar dados do Excel', erro });
